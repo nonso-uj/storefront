@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row">
+    {% for product in products %}
+    <div class="col-4">
+        <h3>{{ product.title }}</h3>
+        <p>{{ product.description }}</p>
+        <h5>Price: {{ product.price }}</h5>
+        
+
+        {% if request.user.is_authenticated %}
+        {% if product.id not in user_cart %}
+
+        <div class="d-grid gap-2">
+            <a href="{% url 'add-to-cart' product.id %}" class="btn btn-warning">Add to Cart</a>
+        </div>
+        
+        {% endif %}
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+
+
+
+
+<br><br><br><br>
+
+
+<h1>{{ request.user.username | title }}'s Cart </h1>
+
+<form action="{% url 'order' %}" method="POST" class="my-5">
+    {% csrf_token %}
+
+    <input type="submit" class="form-control w-100 text-light bg-primary" value="Place Order">
+</form>
+
+
+<div class="row">
+
+    {% if request.user.is_authenticated %}
+    {% for cartproduct in cart %}
+    <div class="col-4">
+        <h3>{{ cartproduct.product.title }}</h3>
+        <p>{{ cartproduct.product.description }}</p>
+        <p>Quantity: {{ cartproduct.quantity }}</p>
+        <b>Price: {{ cartproduct.product.price }}</b>
+        <br>
+        <b>Total Price: {{ cartproduct.full_price }}</b>
+
+        <div class="d-grid gap-2">
+            <a href="{% url 'increment' cartproduct.id %}" class="btn btn-warning">Increment</a>
+            <a href="{% url 'rmv-from-cart' cartproduct.id %}" class="btn btn-danger">Decrement</a>
+        </div>
+        
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+<br><br><br><br>
+
+
+<h1>{{ request.user.username | title }}'s Order History </h1>
+<div class="row">
+
+    {% if request.user.is_authenticated %}
+    {% for order in orders %}
+    <div class="col-4">
+        <h3>{{ order.product.title }}</h3>
+        <p>{{ order.product.description }}</p>
+        <p>Quantity: {{ order.quantity }}</p>
+        <b>Price: {{ order.product.price }}</b>
+        <br>
+        <b>Total Price: {{ order.full_price }}</b>
+
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+
+
+
+
+{% endblock %}
